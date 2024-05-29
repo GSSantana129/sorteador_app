@@ -11,6 +11,7 @@ class _NamePickerPageState extends State<NamePickerPage> {
   final List<String> _names = [];
   final List<String> _selectedNames = [];
   final _controller = TextEditingController();
+  final _numberController = TextEditingController();
   int _numberOfNamesToPick = 1;
 
   void _addName() {
@@ -35,6 +36,15 @@ class _NamePickerPageState extends State<NamePickerPage> {
     });
   }
 
+  void _updateNumberOfNamesToPick(String value) {
+    int? val = int.tryParse(value);
+    if (val != null && val > 0 && val <= _names.length) {
+      setState(() {
+        _numberOfNamesToPick = val;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,98 +52,129 @@ class _NamePickerPageState extends State<NamePickerPage> {
         title: Text('Sorteador de Nomes'),
         backgroundColor: Colors.deepPurple,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  labelText: 'Adicione um nome',
-                  border: OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: _addName,
-                  ),
+            TextField(
+              controller: _controller,
+              style:
+                  TextStyle(color: Colors.black), // Cor do texto do TextField
+              decoration: InputDecoration(
+                labelText: 'Adicione um nome',
+                labelStyle:
+                    TextStyle(color: Colors.black), // Cor do texto do labelText
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Colors.blue.shade900), // Cor da borda do TextField
                 ),
-                onSubmitted: (_) => _addName(),
-              ),
-            ),
-            if (_names.isNotEmpty) // Show the slider only if there are names
-              Column(
-                children: [
-                  Text(
-                    'Selecione quantos nomes sortear:',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                  ),
-                  SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: Colors.deepPurple[700],
-                      inactiveTrackColor: Colors.deepPurple[100],
-                      trackHeight: 4.0,
-                      thumbColor: Colors.deepPurple,
-                      overlayColor: Colors.deepPurple.withAlpha(32),
-                      tickMarkShape: RoundSliderTickMarkShape(),
-                      activeTickMarkColor: Colors.deepPurple[700],
-                      inactiveTickMarkColor: Colors.deepPurple[100],
-                    ),
-                    child: Slider(
-                      value: _numberOfNamesToPick.toDouble(),
-                      min: 1,
-                      max: _names.length.toDouble(),
-                      divisions: _names.length,
-                      label: _numberOfNamesToPick.toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _numberOfNamesToPick = value.toInt();
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: ElevatedButton(
-                onPressed: _names.isNotEmpty ? _pickRandomNames : null,
-                child: Text('Sortear Nome(s)'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Divider(),
-            ),
-            Text('Todos os Nomes Adicionados:',
-                style: TextStyle(fontSize: 18, color: Colors.grey[700])),
-            ListView.builder(
-              shrinkWrap: true, // Important to prevent infinite height error
-              itemCount: _names.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: ListTile(
-                    title: Text(_names[index]),
-                    tileColor: Colors.deepPurple[50],
-                  ),
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Divider(),
-            ),
-            Text('Nome(s) Sorteados:',
-                style: TextStyle(fontSize: 18, color: Colors.grey[700])),
-            ..._selectedNames.map(
-              (name) => Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 24)),
-                  tileColor: Colors.deepPurple[100],
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: _addName,
+                  color: Colors.black, // Cor do ícone do TextField
                 ),
               ),
+              onSubmitted: (_) => _addName(),
             ),
+            SizedBox(height: 20),
+            if (_names
+                .isNotEmpty) 
+              Container(
+                padding: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.deepPurple),
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color.fromARGB(255, 142, 100,
+                      214), 
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Quantos nomes sortear:',
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    TextField(
+                      controller: _numberController,
+                      style: TextStyle(
+                          color: Colors.black), // Cor do texto do TextField
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        labelText: 'Número de nomes',
+                        labelStyle: TextStyle(
+                            color: Colors.black), // Cor do texto do labelText
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.black), // Cor da borda do TextField
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: _updateNumberOfNamesToPick,
+                    ),
+                  ],
+                ),
+              ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _names.isNotEmpty ? _pickRandomNames : null,
+              child: Text(
+                'Sortear Nome(s)',
+                style: TextStyle(color: Colors.black),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple, // Cor do fundo do botão
+              ),
+            ),
+            if (_names.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  children: [
+                    Divider(),
+                    Text(
+                      'Todos os Nomes Adicionados:',
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.deepPurple),
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.deepPurple,
+                      ),
+                      child: Text(
+                        _names.join(', '),
+                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_selectedNames.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  children: [
+                    Divider(),
+                    Text(
+                      'Nome(s) Sorteados:',
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.deepPurple),
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.deepPurple[400],
+                      ),
+                      child: Text(
+                        _selectedNames.join(', '),
+                        style: TextStyle(fontSize: 24, color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

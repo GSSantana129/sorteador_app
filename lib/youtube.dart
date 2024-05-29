@@ -14,17 +14,25 @@ class YoutubeRedirectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(
+      appBar: AppBar(
         title: Text('Youtube com um vídeo importante'),
         backgroundColor: Colors.deepPurple,
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: _launchURL,
-          child: Text('Abre e veja!'),
+          child: Text('Abre e veja!', style: TextStyle(color: Colors.white),),
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50), // Ajuste o padding aqui
+            backgroundColor: Colors.deepPurple,
+            textStyle: TextStyle(fontSize: 22),
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
         ),
       ),
     );
   }
-  
 }
